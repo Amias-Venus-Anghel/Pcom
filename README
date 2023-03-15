@@ -1,0 +1,135 @@
+/* Anghel Ionela Carmen 322CB */
+
+ _____________________________________________
+/ Tema 3 Client Web. Comunicaţie cu REST API /
+*********************************************
+
+Arhiva contine fisierele:
+buffer.c buffer.h helpers.c helpers.h parson.c parson.h client.c requests.c 
+requests.h response.c response.h README si Makefile (cu comenzile de make, run si clean)
+
+In realizarea temei am pornit de la laboratorul 10 si am preluat din el fisierele:
+buffer.c buffer.h helpers.c si helpers.h.
+Am modificat fisierele: requests.c si requests.h.
+
+In rezolvarea cerintei m-am folosit de biblioteca de parsare parson.c deoarece 
+functiele incluse mi-au permis crearea cu usurinta a datelor in formatul cerut pentru
+realizarea requesturilor catre server.
+
+Fisierul response.c contine cateva functii auxiliare utilizate periodic in rezolvare.
+Fisierul client.c contine functia main in care are loc o bubla infinata, verificarea
+comenzii date de utilizator si operatile necesare pentru afisarea rezultatului.
+
+ _________________________
+/ Functii din response.c /
+*************************
+
+/* get_user_input */
+- cere si citeste username-ul si password-ul de la tastatura si intoarce un string in
+format JSON prin utilizarea functiilor din parson.c
+
+/* get_new_book */
+- cere si citeste datele despre o noua carte si intoarce cartea in format json sau
+NULL daca au avut loc erori 
+- daca datele din "title", "author", "genre" sau "publisher" sunt nule, afiseaza o 
+eroare pentru input invalid
+- daca nu se introduce un numar valid ca numar de pagini, afiseaza o eroare 
+corespunzatoare
+
+/* find_msg */
+- primeste raspunsul de la server, un mesaj cautat, numarul de caractere aditionale
+si sirul care marcheaza finalul sirului cautat
+- cauta in "response" mesajul cheie "msg" si returneaza stringul cuprins intre pozitia
+lui "msg" plus "counter" si pozitia la care se gaseste sirul delimitator de final 
+"del_end"
+- daca nu se gaseste se returneaza NULL
+- functie folosita pentru detectarea erorilor, a cookie-ului de sesiune si a tokenului
+JWT de acces
+
+/* print_req_state */
+- primeste raspunsul de la server si un mesaj de succes
+- daca nu se gasesc erori se va afisa mesajul de succes
+- daca se gaseste o eroare se va afisa aceasta
+ ________________________
+/ Modificari requests.c /
+************************
+
+/* compute_get_request */
+- am modificat parametrii de intrare astfel: am sters parametrii care nu erau utili
+pentru implementarea mea, functia primeste un singur sir de cookies, functia primeste
+un token pentru verificarea accesului si un bool "delete"
+- bool-ul "delete" are valoarea true daca request-ul catre server va fi de tip DELETE,
+altfel requestul va fi de tip "GET"
+- am mmodificat adaugarea de cookies in mesaj si am adaugat adaugarea token- ului
+
+/* compute_post_request */
+- am adaugat aceleasi modificari ca la functia "compute_get_request" cu exceptia
+parametrului "delete" care nu este prezent aici
+
+ ___________________________
+/ client.c si functia main /
+***************************
+- am declarat variabile importante si reutilizate si am initializat "cookie" si 
+"tokenJWT" cu null
+- citirea si realizarea comenzilor se desfasoara intr-o bucla infinita
+- la inceputul buclei se deschide conexiunea cu serverul
+- daca comanda introdusa nu este valida se afiseaza un mesaj de input invalid
+
+/* exit */
+- determinz inchiderea conexiunii si terminarea programului
+
+/* register */
+- se construiester mesajul si se trimite catre server
+- se afiseaza mesajul de reusita sau eroarea detectata
+
+/* login */
+- se construiester mesajul si se trimite catre server
+- se afiseaza mesajul de reusita sau eroarea detectata
+- daca are loc cu succes se initializeaza "tokebJWT" cu null si se afiseaza "cookie"
+
+/* enter_library */
+- se verifica ca utilizatorul este logat si se afiseaza mesaj de eroare daca nu este
+- se construieste mesajul si se trimite catre server
+- se extrage token-ul din raspuns si se afiseaza mesajul corespunzator pentru reusita
+sau esec
+- se afiseaza token-ul daca are loc cu succes
+
+/* get_books */
+- se verifica ca utilizatorul este logat si are acces in librarie si se afiseaza
+mesajele corespunzatoare
+- se costruieste si se trimite mesajul catre server
+- se afiseaza mesajul de reusita sau eroare si cartile daca este cazul
+
+/* get_book */
+- se verifica ca utilizatorul este logat si are acces in librarie si se afiseaza
+mesajele corespunzatoare
+- se verifica ca id-ul cartii introdus este valid
+- se construieste path-ul necesar
+- se costruieste si se trimite mesajul catre server
+- se afiseaza rezultatul corespunzator
+
+/* add_book */
+- verifica accesul utilizatorului si afiseaza mesajeel necesare
+- optine o noua carte, daca are loc o eroare la introducerea datelor se afiseaza
+mesajul corespunzator
+- altfel se trimite mesajul la server si se afiseaza rezultatul
+
+/* delete_book */
+- se verifica accesul utilizatorului si afiseaza mesajeel necesare
+- se cerifica ca id-ul este valid  si se construieste calea
+- se costruieste si se trimite mesajul catre server
+- se afiseaza rezultatul 
+
+/* logout */
+- se construieste mesajul si se trimite catre server
+- se afiseaza succesul sau eroarea 
+- se reseteaza "tokenJWT" si "cookie"
+
+
+
+
+
+
+
+
+
